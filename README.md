@@ -1,7 +1,3 @@
-Aqui está o arquivo `README.md` perfeitamente adaptado para o seu projeto **ContaGotas**, seguindo exatamente a estrutura e o estilo visual que você utilizou no UniTech:
-
----
-
 # ContaGotas 💧
 
 Landing page oficial do ContaGotas, um aplicativo mobile gratuito de uso social focado em hidratação inteligente e saúde preventiva. Desenvolvido como projeto de extensão universitária pela Liga Acadêmica de Dados (LIAD) do curso de Análise e Desenvolvimento de Sistemas da UNINASSAU Boa Viagem (2026).
