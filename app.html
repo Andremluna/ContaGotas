@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0C2748">
+  <title>ContaGotas — App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --aqua: #0EA5E9;
+      --aqua-dark: #0369A1;
+      --ink: #0C2748;
+      --mint: #14B8A6;
+      --bg: #F0F9FF;
+      --gray: #64748B;
+      --gray-light: #94A3B8;
+      --line: #E2E8F0;
+      --line-light: #F1F5F9;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 50%, #A7F3D0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .bg-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-blob-1 { top: -100px; left: -100px; width: 400px; height: 400px; background: #0EA5E9; }
+    .bg-blob-2 { bottom: -100px; right: -100px; width: 500px; height: 500px; background: #14B8A6; }
+
+    /* Page chrome */
+    .page-brand {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Instrument Serif', serif;
+      font-size: 22px;
+      color: var(--ink);
+      text-decoration: none;
+      z-index: 5;
+    }
+    .page-brand-mark {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--aqua), var(--mint));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 14px rgba(14, 165, 233, 0.3);
+    }
+    .page-back {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 10px 18px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      text-decoration: none;
+      z-index: 5;
+      border: 1px solid rgba(255,255,255,0.6);
+      transition: all 0.2s;
+    }
+    .page-back:hover { background: white; transform: translateY(-1px); }
+
+    /* Phone frame */
+    .phone {
+      position: relative;
+      width: 390px;
+      height: 844px;
+      background: #0d0d0d;
+      border-radius: 54px;
+      padding: 12px;
+      box-shadow:
+        inset 0 0 0 2px #2a2a2a,
+        0 0 0 6px #1a1a1a,
+        0 40px 80px rgba(12, 39, 72, 0.4),
+        0 80px 160px rgba(12, 39, 72, 0.2);
+      z-index: 1;
+    }
+    .phone-notch {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 32px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 10;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      border-radius: 42px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Status bar */
+    .status-bar {
+      height: 44px;
+      padding: 14px 32px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 5;
+    }
+    .status-icons { display: flex; gap: 6px; align-items: center; }
+
+    /* App content */
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0 24px 110px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .app-content::-webkit-scrollbar { display: none; }
+
+    /* Bottom nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 90px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      padding: 12px 12px 24px;
+      border-radius: 0 0 42px 42px;
+      z-index: 20;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 4px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--gray-light);
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .nav-item.active { color: var(--aqua); }
+    .nav-item svg { width: 22px; height: 22px; }
+    .nav-item span { font-size: 10px; font-weight: 700; letter-spacing: 0.4px; }
+
+    /* Screens */
+    .screen { display: none; animation: fadeIn 0.3s; }
+    .screen.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .display { font-family: 'Instrument Serif', serif; font-weight: 400; letter-spacing: -0.015em; }
+
+    /* Greeting */
+    .greeting { padding: 8px 0 12px; }
+    .greeting-label { font-size: 11px; color: var(--gray); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+    .greeting-title { font-size: 32px; color: var(--ink); margin-top: 4px; line-height: 1.05; }
+    .greeting-title em { font-style: italic; color: var(--aqua-dark); }
+
+    /* Water ring */
+    .water-ring-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 4px 0 20px;
+    }
+    .water-ring {
+      position: relative;
+      width: 250px;
+      height: 250px;
+    }
+    .water-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .water-ring-bg { fill: none; stroke: #E0F2FE; stroke-width: 16; }
+    .water-ring-fg {
+      fill: none;
+      stroke: url(#aquaGrad);
+      stroke-width: 16;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .water-ring-center {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+    .water-current { font-size: 56px; line-height: 1; color: var(--ink); }
+    .water-unit { font-size: 14px; color: var(--gray); font-weight: 600; margin-top: 2px; }
+    .water-goal { font-size: 12px; color: var(--gray-light); margin-top: 8px; }
+    .water-percent {
+      position: absolute;
+      top: 18px;
+      right: 6px;
+      background: linear-gradient(135deg, var(--aqua), var(--mint));
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+    }
+
+    /* Quick add buttons */
+    .quick-add {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 4px 0 20px;
+    }
+    .qa-btn {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .qa-btn:active {
+      background: var(--aqua);
+      color: white;
+      transform: scale(0.96);
+      box-shadow: 0 6px 16px rgba(14, 165, 233, 0.35);
+    }
+    .qa-amount { font-size: 13px; font-weight: 700; color: var(--ink); }
+    .qa-btn:active .qa-amount { color: white; }
+    .qa-icon-wrap {
+      width: 32px; height: 32px;
+      background: #E0F2FE;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .qa-btn:active .qa-icon-wrap { background: rgba(255,255,255,0.2); }
+    .qa-icon-wrap svg { width: 16px; height: 16px; color: var(--aqua); }
+    .qa-btn:active .qa-icon-wrap svg { color: white; }
+
+    /* Section header */
+    .section-h {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin: 16px 0 10px;
+    }
+
+    /* Entries */
+    .entry-list { display: flex; flex-direction: column; gap: 8px; }
+    .entry {
+      background: white;
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--line-light);
+      animation: slideIn 0.3s;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-12px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .entry-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #E0F2FE, #BAE6FD);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .entry-icon svg { width: 16px; height: 16px; color: var(--aqua-dark); }
+    .entry-info { flex: 1; }
+    .entry-amount { font-size: 15px; font-weight: 600; color: var(--ink); }
+    .entry-time { font-size: 12px; color: var(--gray-light); margin-top: 1px; }
+    .entry-del {
+      background: none;
+      border: none;
+      color: #CBD5E1;
+      cursor: pointer;
+      padding: 6px;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .entry-del:hover { color: #EF4444; }
+    .entry-empty {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--gray-light);
+      font-size: 13px;
+      background: white;
+      border-radius: 14px;
+      border: 1px dashed var(--line);
+    }
+
+    /* History stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .stat-card {
+      background: white;
+      padding: 14px 8px;
+      border-radius: 14px;
+      text-align: center;
+      border: 1px solid var(--line-light);
+    }
+    .stat-num {
+      font-family: 'Instrument Serif', serif;
+      font-size: 26px;
+      color: var(--aqua-dark);
+      line-height: 1;
+    }
+    .stat-label { font-size: 9px; color: var(--gray); margin-top: 4px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+
+    .chart-card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px 18px;
+      margin: 8px 0 16px;
+      border: 1px solid var(--line-light);
+    }
+    .chart-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 16px; }
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 6px;
+      height: 130px;
+    }
+    .chart-bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      height: 100%;
+    }
+    .chart-bar-track {
+      flex: 1;
+      width: 100%;
+      background: var(--line-light);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .chart-bar-fill {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(180deg, var(--aqua), var(--aqua-dark));
+      border-radius: 8px;
+      transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .chart-bar-fill.full { background: linear-gradient(180deg, var(--mint), #059669); }
+    .chart-bar-label { font-size: 10px; color: var(--gray); font-weight: 600; }
+    .chart-bar-wrap.today .chart-bar-label { color: var(--aqua-dark); font-weight: 800; }
+
+    /* Achievements */
+    .streak-card {
+      background: linear-gradient(135deg, var(--aqua), var(--mint));
+      color: white;
+      padding: 24px;
+      border-radius: 22px;
+      text-align: center;
+      margin: 8px 0 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(14, 165, 233, 0.3);
+    }
+    .streak-card::before {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 140px; height: 140px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 50%;
+    }
+    .streak-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 120px; height: 120px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+    .streak-emoji {
+      font-size: 40px;
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 1;
+    }
+    .streak-num {
+      font-family: 'Instrument Serif', serif;
+      font-size: 52px;
+      line-height: 1;
+      position: relative;
+      z-index: 1;
+    }
+    .streak-label { font-size: 13px; opacity: 0.95; margin-top: 4px; position: relative; z-index: 1; }
+
+    .badges {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .badge {
+      background: white;
+      border-radius: 16px;
+      padding: 16px 6px;
+      text-align: center;
+      border: 1px solid var(--line-light);
+      transition: all 0.2s;
+    }
+    .badge.locked { opacity: 0.35; filter: grayscale(0.7); }
+    .badge.unlocked { box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1); }
+    .badge-icon { font-size: 32px; margin-bottom: 8px; line-height: 1; }
+    .badge-name { font-size: 11px; font-weight: 800; color: var(--ink); line-height: 1.2; }
+    .badge-desc { font-size: 9px; color: var(--gray-light); margin-top: 3px; line-height: 1.3; }
+
+    /* Profile */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 0 20px;
+    }
+    .profile-avatar {
+      width: 62px; height: 62px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--aqua), var(--mint));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Instrument Serif', serif;
+      font-size: 28px;
+      box-shadow: 0 8px 18px rgba(14, 165, 233, 0.25);
+    }
+    .profile-info h3 { font-size: 19px; color: var(--ink); font-weight: 700; }
+    .profile-info p { font-size: 12px; color: var(--gray); margin-top: 2px; }
+
+    .info-row {
+      background: white;
+      padding: 14px 16px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      border: 1px solid var(--line-light);
+    }
+    .info-label { font-size: 13px; color: var(--gray); }
+    .info-value { font-size: 14px; font-weight: 600; color: var(--ink); }
+
+    .danger-btn {
+      width: 100%;
+      background: none;
+      border: 1px solid #FCA5A5;
+      color: #EF4444;
+      padding: 13px;
+      border-radius: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 24px;
+      font-family: inherit;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .danger-btn:hover { background: #FEF2F2; }
+
+    /* Onboarding */
+    .onboarding {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, var(--ink) 0%, var(--aqua-dark) 100%);
+      color: white;
+      padding: 80px 28px 32px;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      border-radius: 42px;
+      overflow-y: auto;
+    }
+    .onboarding::-webkit-scrollbar { display: none; }
+
+    .ob-progress {
+      position: absolute;
+      top: 56px;
+      left: 32px;
+      right: 32px;
+      display: flex;
+      gap: 4px;
+    }
+    .ob-dot {
+      flex: 1;
+      height: 3px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+    .ob-dot.active { background: var(--mint); }
+
+    .ob-step { display: none; flex: 1; flex-direction: column; }
+    .ob-step.active { display: flex; animation: fadeIn 0.4s; }
+    .ob-icon-wrap {
+      width: 64px; height: 64px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .ob-icon-wrap svg { width: 32px; height: 32px; color: white; }
+    .ob-label { font-size: 11px; opacity: 0.7; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .ob-title { font-family: 'Instrument Serif', serif; font-size: 34px; line-height: 1.05; margin: 6px 0 10px; letter-spacing: -0.01em; }
+    .ob-sub { font-size: 14px; opacity: 0.8; line-height: 1.5; margin-bottom: 24px; }
+    .ob-input {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: white;
+      font-size: 16px;
+      padding: 16px;
+      border-radius: 14px;
+      width: 100%;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .ob-input::placeholder { color: rgba(255,255,255,0.4); }
+    .ob-input:focus {
+      outline: none;
+      border-color: var(--mint);
+      background: rgba(255,255,255,0.12);
+    }
+
+    .ob-choices { display: flex; flex-direction: column; gap: 10px; }
+    .ob-choice {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: white;
+      padding: 16px;
+      border-radius: 14px;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .ob-choice:hover { background: rgba(255,255,255,0.1); }
+    .ob-choice.selected {
+      background: rgba(20, 184, 166, 0.2);
+      border-color: var(--mint);
+    }
+    .ob-choice strong { font-size: 15px; display: block; margin-bottom: 2px; }
+    .ob-choice small { font-size: 12px; opacity: 0.7; }
+
+    .ob-actions {
+      margin-top: auto;
+      padding-top: 24px;
+      display: flex;
+      gap: 8px;
+    }
+    .ob-btn {
+      flex: 1;
+      padding: 16px;
+      border-radius: 14px;
+      border: none;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ob-btn-primary {
+      background: var(--mint);
+      color: white;
+      box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
+    }
+    .ob-btn-primary:hover:not(:disabled) { transform: translateY(-1px); }
+    .ob-btn-primary:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
+    .ob-btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      max-width: 100px;
+      flex: 0 0 auto;
+    }
+
+    /* Toast */
+    .toast {
+      position: absolute;
+      bottom: 110px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 50;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Mobile responsive: drop phone frame on small screens */
+    @media (max-width: 480px) {
+      body { padding: 0; background: var(--bg); }
+      .bg-blob, .page-brand, .page-back { display: none; }
+      .phone {
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+      .phone-notch { display: none; }
+      .phone-screen { border-radius: 0; }
+      .onboarding { border-radius: 0; padding-top: 60px; }
+      .ob-progress { top: 24px; }
+      .bottom-nav { border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+
+  <a href="index.html" class="page-brand">
+    <div class="page-brand-mark">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 5 10 5 15C5 18.866 8.134 22 12 22C15.866 22 19 18.866 19 15C19 10 12 2 12 2Z" fill="white"/></svg>
+    </div>
+    ContaGotas
+  </a>
+
+  <a href="index.html" class="page-back">← Voltar pro site</a>
+
+  <div class="phone">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+
+      <!-- ONBOARDING -->
+      <div class="onboarding" id="onboarding">
+        <div class="ob-progress" id="obProgress">
+          <div class="ob-dot active"></div>
+          <div class="ob-dot"></div>
+          <div class="ob-dot"></div>
+          <div class="ob-dot"></div>
+        </div>
+
+        <div class="ob-step active" data-step="1">
+          <div class="ob-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C12 2 5 10 5 15C5 18.866 8.134 22 12 22C15.866 22 19 18.866 19 15C19 10 12 2 12 2Z" fill="currentColor"/></svg>
+          </div>
+          <span class="ob-label">Bem-vindo ao ContaGotas</span>
+          <h2 class="ob-title">Vamos começar?</h2>
+          <p class="ob-sub">Pra calcular sua meta diária de hidratação, vou precisar conhecer você melhor. Como posso te chamar?</p>
+          <input type="text" class="ob-input" id="obName" placeholder="Seu nome" autocomplete="given-name">
+          <div class="ob-actions">
+            <button class="ob-btn ob-btn-primary" onclick="obNext()">Continuar</button>
+          </div>
+        </div>
+
+        <div class="ob-step" data-step="2">
+          <div class="ob-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8h14M5 16h14"/></svg>
+          </div>
+          <span class="ob-label">Passo 2 de 4</span>
+          <h2 class="ob-title">Quanto você pesa?</h2>
+          <p class="ob-sub">Esse é o fator que mais influencia a quantidade de água ideal pro seu corpo.</p>
+          <input type="number" class="ob-input" id="obWeight" placeholder="Peso em kg" min="20" max="250" inputmode="numeric">
+          <div class="ob-actions">
+            <button class="ob-btn ob-btn-secondary" onclick="obBack()">Voltar</button>
+            <button class="ob-btn ob-btn-primary" onclick="obNext()">Continuar</button>
+          </div>
+        </div>
+
+        <div class="ob-step" data-step="3">
+          <div class="ob-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <span class="ob-label">Passo 3 de 4</span>
+          <h2 class="ob-title">Qual sua idade?</h2>
+          <p class="ob-sub">A idade ajuda a ajustar a meta — corpos mais jovens demandam um pouco mais de hidratação.</p>
+          <input type="number" class="ob-input" id="obAge" placeholder="Idade" min="10" max="120" inputmode="numeric">
+          <div class="ob-actions">
+            <button class="ob-btn ob-btn-secondary" onclick="obBack()">Voltar</button>
+            <button class="ob-btn ob-btn-primary" onclick="obNext()">Continuar</button>
+          </div>
+        </div>
+
+        <div class="ob-step" data-step="4">
+          <div class="ob-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4l-1 8 4 1-5 7 1-8-4-1 5-7z"/></svg>
+          </div>
+          <span class="ob-label">Passo 4 de 4</span>
+          <h2 class="ob-title">Como é sua rotina?</h2>
+          <p class="ob-sub">Atividade física aumenta a necessidade de água. Escolha o que mais combina com você.</p>
+          <div class="ob-choices" id="obActivity">
+            <button class="ob-choice" data-value="low" onclick="selectActivity('low', this)">
+              <strong>Tranquila</strong>
+              <small>Trabalho sentado, pouco exercício</small>
+            </button>
+            <button class="ob-choice" data-value="medium" onclick="selectActivity('medium', this)">
+              <strong>Moderada</strong>
+              <small>Caminhadas, exercício 2-3x por semana</small>
+            </button>
+            <button class="ob-choice" data-value="high" onclick="selectActivity('high', this)">
+              <strong>Intensa</strong>
+              <small>Treinos pesados, esportes regulares</small>
+            </button>
+          </div>
+          <div class="ob-actions">
+            <button class="ob-btn ob-btn-secondary" onclick="obBack()">Voltar</button>
+            <button class="ob-btn ob-btn-primary" id="obFinishBtn" onclick="finishOnboarding()" disabled>Calcular meta</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATUS BAR -->
+      <div class="status-bar">
+        <span id="statusTime">09:41</span>
+        <div class="status-icons">
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 9V7M4 9V5M7 9V3M10 9V5M13 9V7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M2 4L7 1L12 4M4 6L7 4L10 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/><rect x="19.5" y="3.5" width="2" height="4" rx="0.5" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      <!-- APP CONTENT -->
+      <div class="app-content">
+
+        <!-- HOME -->
+        <div class="screen active" id="screen-home">
+          <div class="greeting">
+            <span class="greeting-label">Hoje · <span id="todayDate">--</span></span>
+            <h1 class="greeting-title display">Olá, <em id="userName">você</em>.</h1>
+          </div>
+
+          <div class="water-ring-wrap">
+            <div class="water-ring">
+              <svg viewBox="0 0 200 200">
+                <defs>
+                  <linearGradient id="aquaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#0EA5E9"/>
+                    <stop offset="100%" stop-color="#14B8A6"/>
+                  </linearGradient>
+                </defs>
+                <circle class="water-ring-bg" cx="100" cy="100" r="85"/>
+                <circle class="water-ring-fg" id="ringFg" cx="100" cy="100" r="85" stroke-dasharray="534" stroke-dashoffset="534"/>
+              </svg>
+              <div class="water-ring-center">
+                <span class="water-current display" id="currentMl">0</span>
+                <span class="water-unit">ml hoje</span>
+                <span class="water-goal">meta: <span id="goalMl">2000</span> ml</span>
+              </div>
+              <div class="water-percent" id="ringPercent">0%</div>
+            </div>
+          </div>
+
+          <div class="quick-add">
+            <button class="qa-btn" onclick="addWater(200)">
+              <div class="qa-icon-wrap"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 5 10 5 15C5 18.866 8.134 22 12 22C15.866 22 19 18.866 19 15C19 10 12 2 12 2Z"/></svg></div>
+              <span class="qa-amount">200ml</span>
+            </button>
+            <button class="qa-btn" onclick="addWater(300)">
+              <div class="qa-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7l1 13a2 2 0 002 2h8a2 2 0 002-2l1-13H5zM5 7h14M9 4h6"/></svg></div>
+              <span class="qa-amount">300ml</span>
+            </button>
+            <button class="qa-btn" onclick="addWater(500)">
+              <div class="qa-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2h8v3l1 3v11a2 2 0 01-2 2H9a2 2 0 01-2-2V8l1-3V2z"/></svg></div>
+              <span class="qa-amount">500ml</span>
+            </button>
+            <button class="qa-btn" onclick="customAmount()">
+              <div class="qa-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <span class="qa-amount">Outro</span>
+            </button>
+          </div>
+
+          <div class="section-h">Registros de hoje</div>
+          <div class="entry-list" id="entryList"></div>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="screen" id="screen-history">
+          <div class="greeting">
+            <span class="greeting-label">Histórico</span>
+            <h1 class="greeting-title display">Sua <em>semana</em>.</h1>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-num display" id="weekTotal">0L</div>
+              <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num display" id="weekAvg">0</div>
+              <div class="stat-label">Média/dia</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num display" id="weekDays">0</div>
+              <div class="stat-label">Dias 100%</div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">Últimos 7 dias</div>
+            <div class="chart-bars" id="chartBars"></div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">Resumo</div>
+            <div style="font-size: 13px; color: var(--gray); line-height: 1.6;" id="weekSummary">
+              Continue registrando seus copos para ver insights da sua hidratação aqui.
+            </div>
+          </div>
+        </div>
+
+        <!-- ACHIEVEMENTS -->
+        <div class="screen" id="screen-achievements">
+          <div class="greeting">
+            <span class="greeting-label">Conquistas</span>
+            <h1 class="greeting-title display">Suas <em>medalhas</em>.</h1>
+          </div>
+
+          <div class="streak-card">
+            <div class="streak-emoji">🔥</div>
+            <div class="streak-num display" id="streakNum">0</div>
+            <div class="streak-label">dia(s) batendo a meta seguidos</div>
+          </div>
+
+          <div class="section-h">Medalhas</div>
+          <div class="badges" id="badges"></div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="screen" id="screen-profile">
+          <div class="greeting">
+            <span class="greeting-label">Perfil</span>
+            <h1 class="greeting-title display"><em>Você</em>.</h1>
+          </div>
+
+          <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">A</div>
+            <div class="profile-info">
+              <h3 id="profileName">--</h3>
+              <p>Membro ContaGotas</p>
+            </div>
+          </div>
+
+          <div class="section-h">Seus dados</div>
+          <div class="info-row">
+            <span class="info-label">Peso</span>
+            <span class="info-value"><span id="profileWeight">--</span> kg</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Idade</span>
+            <span class="info-value"><span id="profileAge">--</span> anos</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Rotina</span>
+            <span class="info-value" id="profileActivity">--</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Meta diária</span>
+            <span class="info-value"><span id="profileGoal">--</span> ml</span>
+          </div>
+
+          <div class="section-h">Lembretes</div>
+          <div class="info-row">
+            <span class="info-label">Acordar — dormir</span>
+            <span class="info-value">08:00 → 22:00</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Intervalo</span>
+            <span class="info-value">A cada 1h30</span>
+          </div>
+
+          <button class="danger-btn" onclick="resetApp()">Recomeçar do zero</button>
+        </div>
+
+      </div>
+
+      <!-- Toast -->
+      <div class="toast" id="toast"></div>
+
+      <!-- Bottom nav -->
+      <div class="bottom-nav">
+        <button class="nav-item active" data-screen="home" onclick="switchScreen('home', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C12 2 5 10 5 15C5 18.866 8.134 22 12 22C15.866 22 19 18.866 19 15C19 10 12 2 12 2Z"/></svg>
+          <span>HOJE</span>
+        </button>
+        <button class="nav-item" data-screen="history" onclick="switchScreen('history', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 6-6"/></svg>
+          <span>HISTÓRICO</span>
+        </button>
+        <button class="nav-item" data-screen="achievements" onclick="switchScreen('achievements', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7"/></svg>
+          <span>CONQUISTAS</span>
+        </button>
+        <button class="nav-item" data-screen="profile" onclick="switchScreen('profile', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+          <span>PERFIL</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ============ STATE ============
+    const STORAGE_KEY = 'contagotas_v1';
+    let state = { profile: null, history: {} };
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) state = JSON.parse(raw);
+      } catch (e) { console.warn('Failed to load state:', e); }
+    }
+    function save() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+      catch (e) { console.warn('Failed to save state:', e); }
+    }
+
+    // ============ HELPERS ============
+    function todayKey() {
+      return new Date().toISOString().split('T')[0];
+    }
+    function dateLabel(d) {
+      return ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'][d.getDay()];
+    }
+    function formatDate(d) {
+      const months = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+      return `${d.getDate()} ${months[d.getMonth()]}`;
+    }
+    function calculateGoal(weight, age, activity) {
+      let goal = weight * 35;
+      if (age > 55) goal *= 0.95;
+      if (age < 25) goal *= 1.05;
+      if (activity === 'medium') goal *= 1.1;
+      if (activity === 'high') goal *= 1.2;
+      return Math.round(goal / 50) * 50;
+    }
+    function activityLabel(a) {
+      return { low: 'Tranquila', medium: 'Moderada', high: 'Intensa' }[a] || '--';
+    }
+    function totalForDay(key) {
+      return (state.history[key]?.entries || []).reduce((s, e) => s + e.amount, 0);
+    }
+
+    // ============ ONBOARDING ============
+    let obStep = 1;
+    const obData = {};
+
+    function obNext() {
+      if (obStep === 1) {
+        const name = document.getElementById('obName').value.trim();
+        if (!name) { document.getElementById('obName').focus(); return; }
+        obData.name = name;
+      } else if (obStep === 2) {
+        const w = parseInt(document.getElementById('obWeight').value);
+        if (!w || w < 20 || w > 250) { document.getElementById('obWeight').focus(); return; }
+        obData.weight = w;
+      } else if (obStep === 3) {
+        const a = parseInt(document.getElementById('obAge').value);
+        if (!a || a < 10 || a > 120) { document.getElementById('obAge').focus(); return; }
+        obData.age = a;
+      }
+      obStep = Math.min(4, obStep + 1);
+      updateObUI();
+    }
+    function obBack() {
+      obStep = Math.max(1, obStep - 1);
+      updateObUI();
+    }
+    function updateObUI() {
+      document.querySelectorAll('.ob-step').forEach(s => {
+        s.classList.toggle('active', parseInt(s.dataset.step) === obStep);
+      });
+      document.querySelectorAll('.ob-dot').forEach((d, i) => {
+        d.classList.toggle('active', i < obStep);
+      });
+    }
+    function selectActivity(value, btn) {
+      obData.activity = value;
+      document.querySelectorAll('#obActivity .ob-choice').forEach(c => c.classList.remove('selected'));
+      btn.classList.add('selected');
+      document.getElementById('obFinishBtn').disabled = false;
+    }
+    function finishOnboarding() {
+      if (!obData.activity) return;
+      state.profile = {
+        name: obData.name,
+        weight: obData.weight,
+        age: obData.age,
+        activity: obData.activity,
+        goalMl: calculateGoal(obData.weight, obData.age, obData.activity),
+        createdAt: new Date().toISOString(),
+      };
+      save();
+      document.getElementById('onboarding').style.display = 'none';
+      initApp();
+      setTimeout(() => showToast(`Meta calculada: ${state.profile.goalMl}ml/dia`), 300);
+    }
+
+    // ============ APP ============
+    function initApp() {
+      if (!state.profile) {
+        document.getElementById('onboarding').style.display = 'flex';
+        return;
+      }
+      document.getElementById('onboarding').style.display = 'none';
+      renderAll();
+    }
+    function renderAll() {
+      renderHome();
+      renderHistory();
+      renderAchievements();
+      renderProfile();
+    }
+
+    function addWater(amount) {
+      if (!state.profile) return;
+      const key = todayKey();
+      if (!state.history[key]) state.history[key] = { entries: [] };
+      const prevTotal = totalForDay(key);
+      state.history[key].entries.push({ amount, time: new Date().toISOString() });
+      save();
+      renderAll();
+      showToast(`+${amount}ml registrado`);
+      const newTotal = prevTotal + amount;
+      if (newTotal >= state.profile.goalMl && prevTotal < state.profile.goalMl) {
+        setTimeout(() => showToast('🎉 Meta diária atingida!'), 1400);
+      }
+    }
+    function customAmount() {
+      const v = prompt('Quantos ml?');
+      const n = parseInt(v);
+      if (n && n > 0 && n < 3000) addWater(n);
+    }
+    function deleteEntry(idx) {
+      const key = todayKey();
+      if (!state.history[key]) return;
+      state.history[key].entries.splice(idx, 1);
+      save();
+      renderAll();
+    }
+
+    function renderHome() {
+      if (!state.profile) return;
+      const total = totalForDay(todayKey());
+      const goal = state.profile.goalMl;
+      const pct = Math.min(100, Math.round((total / goal) * 100));
+
+      document.getElementById('userName').textContent = state.profile.name.split(' ')[0];
+      document.getElementById('todayDate').textContent = formatDate(new Date());
+      document.getElementById('currentMl').textContent = total.toLocaleString('pt-BR');
+      document.getElementById('goalMl').textContent = goal.toLocaleString('pt-BR');
+      document.getElementById('ringPercent').textContent = pct + '%';
+
+      const circumference = 2 * Math.PI * 85;
+      const offset = circumference - (Math.min(total, goal) / goal) * circumference;
+      document.getElementById('ringFg').style.strokeDashoffset = offset;
+
+      const entries = (state.history[todayKey()]?.entries || []);
+      const listEl = document.getElementById('entryList');
+      if (entries.length === 0) {
+        listEl.innerHTML = `<div class="entry-empty">Nenhum registro hoje.<br>Bora começar com um copo de água?</div>`;
+      } else {
+        listEl.innerHTML = entries.slice().reverse().map((e, i) => {
+          const realIdx = entries.length - 1 - i;
+          const t = new Date(e.time);
+          const hh = t.getHours().toString().padStart(2, '0');
+          const mm = t.getMinutes().toString().padStart(2, '0');
+          return `
+            <div class="entry">
+              <div class="entry-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 5 10 5 15C5 18.866 8.134 22 12 22C15.866 22 19 18.866 19 15C19 10 12 2 12 2Z"/></svg>
+              </div>
+              <div class="entry-info">
+                <div class="entry-amount">${e.amount} ml</div>
+                <div class="entry-time">às ${hh}:${mm}</div>
+              </div>
+              <button class="entry-del" onclick="deleteEntry(${realIdx})" aria-label="Remover">✕</button>
+            </div>`;
+        }).join('');
+      }
+    }
+
+    function renderHistory() {
+      if (!state.profile) return;
+      const goal = state.profile.goalMl;
+      const today = new Date();
+      const bars = [];
+      let weekTotal = 0;
+      let daysCompleted = 0;
+      let bestDay = { label: '--', total: 0 };
+
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        const key = d.toISOString().split('T')[0];
+        const total = totalForDay(key);
+        weekTotal += total;
+        if (total >= goal) daysCompleted++;
+        if (total > bestDay.total) bestDay = { label: dateLabel(d), total };
+        const pct = Math.min(100, (total / goal) * 100);
+        bars.push({ label: dateLabel(d), pct, total, isFull: total >= goal, isToday: i === 0 });
+      }
+
+      document.getElementById('weekTotal').textContent = (weekTotal / 1000).toFixed(1) + 'L';
+      document.getElementById('weekAvg').textContent = Math.round(weekTotal / 7).toLocaleString('pt-BR');
+      document.getElementById('weekDays').textContent = daysCompleted;
+
+      document.getElementById('chartBars').innerHTML = bars.map(b => `
+        <div class="chart-bar-wrap ${b.isToday ? 'today' : ''}">
+          <div class="chart-bar-track">
+            <div class="chart-bar-fill ${b.isFull ? 'full' : ''}" style="height: ${b.pct}%"></div>
+          </div>
+          <div class="chart-bar-label">${b.label}</div>
+        </div>
+      `).join('');
+
+      // Summary
+      let summary;
+      if (weekTotal === 0) {
+        summary = 'Continue registrando seus copos para ver insights da sua hidratação aqui.';
+      } else if (daysCompleted === 7) {
+        summary = '🌊 Semana perfeita! Você bateu a meta todos os dias. Continue assim.';
+      } else if (daysCompleted >= 5) {
+        summary = `Ótima semana — você bateu a meta em <strong>${daysCompleted} de 7</strong> dias. Seu melhor dia foi <strong>${bestDay.label}</strong>.`;
+      } else if (daysCompleted >= 1) {
+        summary = `Você bateu a meta em <strong>${daysCompleted}</strong> dia(s) essa semana. Que tal um copo a mais hoje?`;
+      } else {
+        summary = `Ainda não bateu a meta essa semana. Vamos começar com pequenos goles ao longo do dia.`;
+      }
+      document.getElementById('weekSummary').innerHTML = summary;
+    }
+
+    function renderAchievements() {
+      if (!state.profile) return;
+      const goal = state.profile.goalMl;
+      const today = new Date();
+
+      // Streak (today counts if hit; otherwise look back from yesterday)
+      let streak = 0;
+      const todayTotal = totalForDay(todayKey());
+      const startOffset = todayTotal >= goal ? 0 : 1;
+      for (let i = startOffset; i < 365; i++) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        const key = d.toISOString().split('T')[0];
+        if (totalForDay(key) >= goal) streak++;
+        else break;
+      }
+      document.getElementById('streakNum').textContent = streak;
+
+      const allDays = Object.keys(state.history);
+      const daysHit = allDays.filter(k => totalForDay(k) >= goal).length;
+      const totalMl = allDays.reduce((sum, k) => sum + totalForDay(k), 0);
+
+      const badges = [
+        { icon: '🌱', name: 'Primeiro Gole', desc: 'Registre 1 copo', unlocked: totalMl > 0 },
+        { icon: '💧', name: 'Hidratado', desc: 'Bata a meta 1x', unlocked: daysHit >= 1 },
+        { icon: '🔥', name: 'Sequência 3', desc: '3 dias seguidos', unlocked: streak >= 3 },
+        { icon: '⭐', name: 'Semana Cheia', desc: '7 dias na meta', unlocked: daysHit >= 7 },
+        { icon: '🏆', name: 'Veterano', desc: '30 dias completos', unlocked: daysHit >= 30 },
+        { icon: '🌊', name: 'Oceano', desc: 'Beba 100L total', unlocked: totalMl >= 100000 },
+      ];
+      document.getElementById('badges').innerHTML = badges.map(b => `
+        <div class="badge ${b.unlocked ? 'unlocked' : 'locked'}">
+          <div class="badge-icon">${b.icon}</div>
+          <div class="badge-name">${b.name}</div>
+          <div class="badge-desc">${b.desc}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderProfile() {
+      if (!state.profile) return;
+      const p = state.profile;
+      document.getElementById('profileName').textContent = p.name;
+      document.getElementById('profileWeight').textContent = p.weight;
+      document.getElementById('profileAge').textContent = p.age;
+      document.getElementById('profileActivity').textContent = activityLabel(p.activity);
+      document.getElementById('profileGoal').textContent = p.goalMl.toLocaleString('pt-BR');
+      document.getElementById('profileAvatar').textContent = p.name[0].toUpperCase();
+    }
+
+    function switchScreen(name, btn) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + name).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelector('.app-content').scrollTop = 0;
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function resetApp() {
+      if (!confirm('Tem certeza? Isso vai apagar todos os seus dados.')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      state = { profile: null, history: {} };
+      obStep = 1;
+      Object.keys(obData).forEach(k => delete obData[k]);
+      document.getElementById('obName').value = '';
+      document.getElementById('obWeight').value = '';
+      document.getElementById('obAge').value = '';
+      document.querySelectorAll('.ob-choice').forEach(c => c.classList.remove('selected'));
+      document.getElementById('obFinishBtn').disabled = true;
+      updateObUI();
+      initApp();
+    }
+
+    function updateClock() {
+      const d = new Date();
+      const hh = d.getHours().toString().padStart(2, '0');
+      const mm = d.getMinutes().toString().padStart(2, '0');
+      document.getElementById('statusTime').textContent = `${hh}:${mm}`;
+    }
+
+    // Allow Enter to advance onboarding inputs
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && document.getElementById('onboarding').style.display !== 'none') {
+        const activeStep = document.querySelector('.ob-step.active');
+        if (activeStep && obStep < 4) obNext();
+      }
+    });
+
+    // INIT
+    load();
+    updateClock();
+    setInterval(updateClock, 30000);
+    initApp();
+  </script>
+</body>
+</html>

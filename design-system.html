@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ContaGotas — Persona & Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F4F8FB;
+    --bg-2: #EAF2F8;
+    --ink: #0B1B2B;
+    --ink-soft: #475569;
+    --muted: #94A3B8;
+    --line: #E2E8F0;
+    --primary: #0EA5E9;       /* aqua */
+    --primary-deep: #0369A1;
+    --secondary: #1E3A8A;     /* deep ocean */
+    --accent: #14B8A6;        /* mint */
+    --accent-warm: #FB923C;   /* coral */
+    --white: #ffffff;
+    --grad-1: linear-gradient(135deg, #0EA5E9 0%, #1E3A8A 100%);
+    --grad-soft: linear-gradient(135deg, #E0F2FE 0%, #DBEAFE 50%, #E0F7F4 100%);
+    --shadow-soft: 0 10px 40px -10px rgba(14, 165, 233, 0.25);
+    --shadow-card: 0 20px 60px -20px rgba(15, 23, 42, 0.15);
+    --radius: 24px;
+    --radius-lg: 32px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    overflow-x: hidden;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Background blobs */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.35;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .blob-1 { width: 600px; height: 600px; background: #7DD3FC; top: -200px; right: -150px; }
+  .blob-2 { width: 500px; height: 500px; background: #A7F3D0; top: 40%; left: -200px; }
+  .blob-3 { width: 400px; height: 400px; background: #E0E7FF; bottom: -100px; right: -50px; }
+  .container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+  /* Header/Nav */
+  nav {
+    position: sticky;
+    top: 16px;
+    z-index: 100;
+    margin: 16px auto 40px;
+    max-width: 1200px;
+    padding: 14px 24px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.06);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    border-radius: 12px;
+    background: var(--grad-1);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-soft);
+  }
+  .nav-links {
+    display: flex; gap: 24px; list-style: none;
+  }
+  .nav-links a {
+    font-size: 13px; font-weight: 600; color: var(--ink-soft); text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--primary); }
+  /* Section Styling */
+  section { padding: 40px 0 60px; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  .section-tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.05;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  h1 em, h2 em {
+    font-style: italic;
+    background: var(--grad-1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: var(--ink);
+  }
+  .subtitle {
+    font-size: 18px;
+    color: var(--ink-soft);
+    max-width: 650px;
+    margin-bottom: 48px;
+  }
+  /* PERSONA STYLE ELEMENTS */
+  .persona-grid {
+    display: grid; grid-template-columns: 1fr 1.8fr; gap: 40px; margin-bottom: 40px;
+  }
+  .profile-card {
+    background: white; border-radius: var(--radius-lg); padding: 40px 32px; border: 1px solid var(--line); box-shadow: var(--shadow-card); text-align: center;
+  }
+  .avatar {
+    width: 150px; height: 150px; border-radius: 50%; margin: 0 auto 24px;
+    background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80');
+    background-size: cover; background-position: center; border: 4px solid var(--bg-2); box-shadow: var(--shadow-soft);
+  }
+  .profile-tag { color: var(--primary-deep); font-size: 14px; font-weight: 600; margin-bottom: 24px; }
+  .demographics { border-top: 1px solid var(--line); padding-top: 20px; text-align: left; display: grid; gap: 12px; }
+  .demo-item { font-size: 14px; color: var(--ink-soft); }
+  .demo-item strong { color: var(--ink); }
+  .details-box { display: grid; gap: 24px; }
+  .card-info { background: white; border-radius: var(--radius); padding: 32px; border: 1px solid var(--line); }
+  .card-info h3 { font-size: 18px; font-weight: 700; margin-bottom: 14px; color: var(--ink); }
+  .card-info p { color: var(--ink-soft); font-size: 15px; line-height: 1.6; }
+  .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .list-bullets { list-style: none; display: grid; gap: 10px; margin-top: 8px; }
+  .list-bullets li { font-size: 14px; color: var(--ink-soft); display: flex; align-items: flex-start; gap: 8px; }
+  .list-bullets li::before { content: "💧"; font-size: 12px; margin-top: 2px; }
+  .list-bullets.pain li::before { content: "❌"; }
+  .alignment-section {
+    background: var(--grad-1); color: white; border-radius: var(--radius-lg); padding: 48px; margin-top: 20px;
+  }
+  .alignment-section h3 { font-family: 'Instrument Serif', serif; font-size: 36px; font-weight: 400; margin-bottom: 24px; }
+  .align-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .align-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: var(--radius); padding: 24px; }
+  .align-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .align-card p { font-size: 14px; opacity: 0.9; }
+  /* DESIGN SYSTEM STYLE ELEMENTS */
+  .ds-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; margin-bottom: 48px; }
+  .ds-block { background: white; border-radius: var(--radius); padding: 32px; border: 1px solid var(--line); }
+  .ds-block h3 { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+
+  /* Color Swatches */
+  .swatch-list { display: grid; gap: 16px; }
+  .swatch-item { display: flex; align-items: center; gap: 16px; }
+  .color-preview { width: 64px; height: 64px; border-radius: 16px; border: 1px solid rgba(0,0,0,0.05); flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+  .color-info h4 { font-size: 15px; font-weight: 700; color: var(--ink); }
+  .color-info code { font-size: 12px; color: var(--primary-deep); background: var(--bg-2); padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+  .color-info p { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+  /* Typography Demo */
+  .type-sample { margin-bottom: 24px; }
+  .type-sample .font-name { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .sample-serif { font-family: 'Instrument Serif', serif; font-size: 40px; color: var(--ink); line-height: 1.1; }
+  .sample-serif em { font-style: italic; background: var(--grad-1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .sample-sans { font-family: 'Inter', sans-serif; font-size: 16px; color: var(--ink-soft); }
+  /* UI Tokens */
+  .token-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .token-card { background: var(--bg); border-radius: 16px; padding: 16px; text-align: center; border: 1px solid var(--line); }
+  .token-card .value { font-size: 18px; font-weight: 700; color: var(--ink); }
+  .token-card .label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  @media (max-width: 968px) {
+    .persona-grid, .sub-grid, .align-grid, .ds-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="container">
+    <nav>
+      <a href="index.html" class="logo">
+        <div class="logo-mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C12 2 5 10 5 15C5 18.866 8.134 22 12 22C15.866 22 19 18.866 19 15C19 10 12 2 12 2Z" fill="white"/>
+          </svg>
+        </div>
+        ContaGotas
+      </a>
+      <ul class="nav-links">
+        <li><a href="#persona">Persona Ideal</a></li>
+        <li><a href="#design-system">Design System</a></li>
+        <li><a href="index.html">← Site</a></li>
+      </ul>
+    </nav>
+    <section id="persona">
+      <span class="section-tag">User Experience</span>
+      <h2>A Persona <em>Ideal</em></h2>
+      <p class="subtitle">Mapeamento de comportamento, rotina e necessidades estruturado para validar a proposta de valor do aplicativo.</p>
+      <div class="persona-grid">
+        <div class="profile-card">
+          <div class="avatar"></div>
+          <h3>Mariana Souza</h3>
+          <p class="profile-tag">A Universitária Sobrecarregada</p>
+          <div class="demographics">
+            <div class="demo-item"><strong>Idade:</strong> 22 anos</div>
+            <div class="demo-item"><strong>Ocupação:</strong> Estudante de Graduação & Estagiária</div>
+            <div class="demo-item"><strong>Localização:</strong> Recife - PE (Clima quente/úmido)</div>
+            <div class="demo-item"><strong>Frequência de Água:</strong> ~800ml por dia (Nível crítico)</div>
+          </div>
+        </div>
+        <div class="details-box">
+          <div class="card-info">
+            <strong>Contexto & Rotina:</strong> Mariana enfrenta jornadas triplas (estágio, trânsito e faculdade). O tempo prolongado em salas com ar-condicionado mitiga a percepção sensorial de sede, fazendo com que ela substitua a água por doses excessivas de café para manter o foco.
+          </div>
+          <div class="sub-grid">
+            <div class="card-info">
+              <h3>Dores Principais</h3>
+              <ul class="list-bullets pain">
+                <li>Quadros de fadiga e dores de cabeça vespertinas recorrentes.</li>
+                <li>Esquecimento crônico gerado pelo foco em outras atividades.</li>
+                <li>Aversão a apps complexos com cadastros e inputs manuais demorados.</li>
+              </ul>
+            </div>
+            <div class="card-info">
+              <h3>Objetivos</h3>
+              <ul class="list-bullets">
+                <li>Criar consistência de hidratação sem acrescentar burocracia ou estresse.</li>
+                <li>Melhorar o desempenho cognitivo e bem-estar físico.</li>
+                <li>Uma interface fluida, rápida e livre de anúncios corporativos agressivos.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="alignment-section">
+        <h3>Alinhamento da Solução</h3>
+        <div class="align-grid">
+          <div class="align-card">
+            <h4>Registro em 1 Toque</h4>
+            <p>Sanidade de fluxo: Mariana consome e registra instantaneamente, quebrando a barreira da preguiça ou falta de tempo.</p>
+          </div>
+          <div class="align-card">
+            <h4>Alertas Inteligentes</h4>
+            <p>Atuação preventiva: o aplicativo envia estímulos de notificação nos momentos de maior foco e desidratação clínica do dia.</p>
+          </div>
+          <div class="align-card">
+            <h4>Recompensa Comportamental</h4>
+            <p>Gamificação leve: medalhas e dias seguidos transformam a ingestão hídrica em um objetivo divertido e gamificado.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="design-system">
+      <span class="section-tag">UI Architecture</span>
+      <h2>O Design <em>System</em></h2>
+      <p class="subtitle">A identidade visual do ContaGotas foi projetada para alinhar a leveza do elemento hídrico com o profissionalismo acadêmico da extensão.</p>
+      <div class="ds-grid">
+        <div class="ds-block">
+          <h3>Paleta de Cores & Psicologia</h3>
+          <div class="swatch-list">
+
+            <div class="swatch-item">
+              <div class="color-preview" style="background: var(--primary);"></div>
+              <div class="color-info">
+                <h4>Primary (Aqua Blue) · <code>#0EA5E9</code></h4>
+                <p><strong>Motivo da escolha:</strong> Evoca diretamente a água, o frescor e a clareza. É a cor ativa do projeto, usada para guiar o olho do usuário para as principais interações e barras de progresso.</p>
+              </div>
+            </div>
+            <div class="swatch-item">
+              <div class="color-preview" style="background: var(--secondary);"></div>
+              <div class="color-info">
+                <h4>Secondary (Deep Ocean) · <code>#1E3A8A</code></h4>
+                <p><strong>Motivo da escolha:</strong> Traz o contraste de profundidade, seriedade e solidez institucional. Garante a autoridade visual do projeto de extensão e assegura excelente acessibilidade de leitura.</p>
+              </div>
+            </div>
+            <div class="swatch-item">
+              <div class="color-preview" style="background: var(--accent);"></div>
+              <div class="color-info">
+                <h4>Accent Green (Mint) · <code>#14B8A6</code></h4>
+                <p><strong>Motivo da escolha:</strong> Simboliza saúde preventiva, vitalidade e equilíbrio biológico. É aplicada em elementos de sucesso, como metas concluídas, conquistas e medalhas ganhas.</p>
+              </div>
+            </div>
+            <div class="swatch-item">
+              <div class="color-preview" style="background: var(--accent-warm);"></div>
+              <div class="color-info">
+                <h4>Warning Color (Coral) · <code>#FB923C</code></h4>
+                <p><strong>Motivo da escolha:</strong> Usada cirurgicamente para quebrar a frieza dos tons azuis. Indica estados de alerta ou urgência, como longos períodos em que o usuário esqueceu de beber água.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ds-block" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3>Tipografia</h3>
+            <div class="type-sample">
+              <div class="font-name">Display Font (Instrument Serif)</div>
+              <div class="sample-serif">Cada gota conta. Sua saúde <span class="accent">também.</span></div>
+              <p class="color-info" style="margin-top:6px;"><strong>Uso:</strong> Títulos principais. O contraste elegante do serifado clássico com o toque itálico humaniza a marca, tornando-a acolhedora e editorial.</p>
+            </div>
+
+            <div class="type-sample" style="border-top: 1px solid var(--line); padding-top: 16px;">
+              <div class="font-name">Body Font (Inter)</div>
+              <div class="sample-sans">Interface simples, com texto legível e navegação 100% intuitiva para o usuário.</div>
+              <p class="color-info" style="margin-top:6px;"><strong>Uso:</strong> Textos corridos, botões e dados. Uma fonte geométrica sem serifa extremamente limpa, focada em legibilidade máxima em qualquer tamanho de tela.</p>
+            </div>
+          </div>
+          <div>
+            <h3>Tokens de Interface</h3>
+            <div class="token-grid">
+              <div class="token-card">
+                <div class="value">24px / 32px</div>
+                <div class="label">Border Radius (Cantos)</div>
+              </div>
+              <div class="token-card">
+                <div class="value">Glassmorphism</div>
+                <div class="label">Efeito Blur em Navbars</div>
+              </div>
+              <div class="token-card">
+                <div class="value">Soft Shadows</div>
+                <div class="label">Sombra de Elevação</div>
+              </div>
+              <div class="token-card">
+                <div class="value">1240px</div>
+                <div class="label">Max Container Grid</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
